@@ -204,7 +204,6 @@ class OnStarData(object):
             v["onstar.nextmaindate"]=o.get_diagnostics().results[0].reportData.maintenance.nextMaintDate
             v["onstar.nextmainodo"]=o.get_diagnostics().results[0].reportData.maintenance.nextMaintOdometer
             v["onstar.airbagok"]=o.get_diagnostics().results[0].reportData.sections.airbag.status=="GREEN"
-            v["onstar.location"]
             
             return v
         except (ConnectionResetError) as err:
