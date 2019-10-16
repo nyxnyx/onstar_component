@@ -34,3 +34,26 @@ sensor:
 ```
 
 After restart of HA you will see sensor.onstar.\* 
+
+
+Example setup for lovelace cards:
+
+```
+title: Opel Insignia
+path: opel
+icon: mdi:car 
+
+cards:
+  - type: entities
+    entities:
+    - sensor.onstar_plate
+    - sensor.onstar_laststatus
+    - sensor.onstar_fuellevel
+    - sensor.onstar_oillife
+    - sensor.onstar_nextmaindate
+    - sensor.onstar_nextmainodo
+    - sensor.onstar_tirelf
+    - sensor.onstar_tirerf
+    - sensor.onstar_tirelr
+    - sensor.onstar_tirerr
+```
