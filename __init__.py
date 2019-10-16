@@ -1,0 +1,1 @@
+REQUIREMENTS = ['onstar==0.1.2']
