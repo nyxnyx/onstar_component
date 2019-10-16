@@ -40,7 +40,8 @@ SENSOR_TYPES = {
     'onstar.tirestatuslr': ['Left Rear Tyre Status', None, None],
     'onstar.tirestatusrf': ['Right Front Tyre Status', None, None],
     'onstar.tirestatusrr': ['Right Rear Tyre Status', None, None],
-    'onstar.nextmainodo': ['Next maintanance', None, None],
+    'onstar.nextmainodo': ['Next maintenance', None, None],
+    'onstar.nextmaindate': ['Next maintenance Date', None, None],
     'onstar.airbagok': ['Airbag status', None, None],
 }
 
@@ -107,6 +108,11 @@ class OnStarSensor(Entity):
 #    @property
 #    def entity_id(self):
 #        return self._entity_id
+
+    @property
+    def should_poll(self):
+        """Return the polling state."""
+        return True
 
     @property
     def icon(self):
@@ -195,10 +201,11 @@ class OnStarData(object):
             v["onstar.tirestatuslr"]=o.get_diagnostics().results[0].reportData.metrics.tireStatusLr=="GREEN"
             v["onstar.tirestatusrf"]=o.get_diagnostics().results[0].reportData.metrics.tireStatusRf=="GREEN"
             v["onstar.tirestatusrr"]=o.get_diagnostics().results[0].reportData.metrics.tireStatusRr=="GREEN"
-            v["onstar.nextmainodo"]=o.get_diagnostics().results[0].reportData.maintenance.nextMaintDate
+            v["onstar.nextmaindate"]=o.get_diagnostics().results[0].reportData.maintenance.nextMaintDate
             v["onstar.nextmainodo"]=o.get_diagnostics().results[0].reportData.maintenance.nextMaintOdometer
             v["onstar.airbagok"]=o.get_diagnostics().results[0].reportData.sections.airbag.status=="GREEN"
-
+            v["onstar.location"]
+            
             return v
         except (ConnectionResetError) as err:
             _LOGGER.debug(

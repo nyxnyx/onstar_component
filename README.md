@@ -27,6 +27,7 @@ sensor:
     - onstar.tirestatusrf
     - onstar.tirestatusrr
     - onstar.nextmainodo
+    - onstar.nextmaindate
     - onstar.airbagok
 
 
