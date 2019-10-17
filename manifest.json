@@ -1,0 +1,10 @@
+{
+    "domain": "onstar_component",
+    "name": "Onstar Platform",
+    "documentation": "https://github.com/nyxnyx/onstar_component",
+    "requirements": [
+      "onstar==0.1.2"
+    ],
+    "dependencies": [],
+    "codeowners": []
+  }

@@ -167,4 +167,5 @@ class OnStarData(object):
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
     def update(self, **kwargs):
         """Fetch the latest status from OnStar."""
+        _LOGGER.info("Update onstar data.")
         self._status = self._get_status()
