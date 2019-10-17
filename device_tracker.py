@@ -26,7 +26,7 @@ class OnstarDeviceTracker:
         """Set up a timer and start gathering devices."""
         self.update()
         track_utc_time_change(
-            hass, lambda now: self.update(), minute=range(0, 60, 15)
+            hass, lambda now: self.update(), second=range(0, 60, 60)
         )
 
 

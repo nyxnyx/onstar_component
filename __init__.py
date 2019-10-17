@@ -31,7 +31,7 @@ CONFIG_SCHEMA = vol.Schema(
     extra=vol.ALLOW_EXTRA,
 )
 
-
+SERVICE_UPDATE_STATE = "update_state"
 
 # Those components will be dicovered automatically based on ocnfiguration
 ONSTAR_COMPONENTS = ["sensor", "device_tracker"]
@@ -47,7 +47,11 @@ def setup(hass, base_config: dict):
     pin = config.get(CONF_PIN)
     
     hass.data[DOMAIN] = OnStarData(username, password, pin)
+    def _update(call) -> None:
+        _LOGGER.info("Update service called")
+        hass.data[DOMAIN].update()
     
+    hass.services.register(DOMAIN, SERVICE_UPDATE_STATE, _update)
 
     for component in ONSTAR_COMPONENTS:
         discovery.load_platform(hass, component, DOMAIN, {}, config)
@@ -78,20 +82,24 @@ class OnStarData(object):
             'onstar.errorcount': ['Errors', '', 'mdi:alert-circle'],
             'onstar.oillife': ['Oil life', '%', 'mdi:oil'],
             'onstar.fuellevel': ['Fuel level', '%', 'mdi:gas-station'],
+            'onstar.range': ['Fuel range', 'km', 'mdi:gas-station'],
             'onstar.ignition': ['Ignition', '', 'mdi:power-standby'],
             'onstar.odometer': ['Odometer', 'km', 'mdi:gauge'],
-            'onstar.tirelf': ['Left Front Tyre', 'kPa', 'mdi:car'],
-            'onstar.tirelr': ['Left Rear Tyre', 'kPa', 'mdi:car-back'],
-            'onstar.tirerf': ['Right Front Tyre', 'kPa', 'mdi:car'],
-            'onstar.tirerr': ['Right Rear Tyre', 'kPa', 'mdi:car-back'],
-            'onstar.tirestatuslf': ['Left Front Tyre Status', None, None],
-            'onstar.tirestatuslr': ['Left Rear Tyre Status', None, None],
-            'onstar.tirestatusrf': ['Right Front Tyre Status', None, None],
-            'onstar.tirestatusrr': ['Right Rear Tyre Status', None, None],
+            'onstar.tirelf': ['Left Front Tire', 'kPa', 'mdi:car'],
+            'onstar.tirelr': ['Left Rear Tire', 'kPa', 'mdi:car-back'],
+            'onstar.tirerf': ['Right Front Tire', 'kPa', 'mdi:car'],
+            'onstar.tirerr': ['Right Rear Tire', 'kPa', 'mdi:car-back'],
+            'onstar.tirestatuslf': ['Left Front Tire Status', None, None],
+            'onstar.tirestatuslr': ['Left Rear Tire Status', None, None],
+            'onstar.tirestatusrf': ['Right Front Tire Status', None, None],
+            'onstar.tirestatusrr': ['Right Rear Tire Status', None, None],
+            'onstar.tiresetting': ['Tire setting', None, None],
+            'onstar.ftirepressure': ['Front Tires expected pressure', 'kPa', None],
+            'onstar.rtirepressure': ['Rear Tire expected pressure', 'kPa', None],
             'onstar.nextmainodo': ['Next maintenance', 'km', None],
             'onstar.nextmaindate': ['Next maintenance Date', None, 'mdi:calendar'],
             'onstar.airbagok': ['Airbag status', None, None],
-            'onstar.localisation': ['Latest localisation', None, 'mdi:compass'],
+            'onstar.localization': ['Latest localization', None, 'mdi:compass'],
             'onstar.vin': ['VIN', None, 'mdi:id-card'],
         }
 
@@ -112,6 +120,7 @@ class OnStarData(object):
             v["onstar.errorcount"]=o.get_diagnostics().results[0].errorCount
             v["onstar.oillife"]=round(o.get_diagnostics().results[0].reportData.metrics.oilLife*100,1)
             v["onstar.fuellevel"]=int(round(o.get_diagnostics().results[0].reportData.metrics.fuelLevel*100))
+            v["onstar.range"]=int(round(o.get_diagnostics().results[0].reportData.metrics.fuelRange))
             v["onstar.ignition"]=o.get_diagnostics().results[0].reportData.metrics.ignition
             v["onstar.odometer"]=int(round(o.get_diagnostics().results[0].reportData.metrics.odometer))
             v["onstar.tirelf"]=o.get_diagnostics().results[0].reportData.metrics.tirePressureLf
@@ -122,11 +131,14 @@ class OnStarData(object):
             v["onstar.tirestatuslr"]=o.get_diagnostics().results[0].reportData.metrics.tireStatusLr=="GREEN"
             v["onstar.tirestatusrf"]=o.get_diagnostics().results[0].reportData.metrics.tireStatusRf=="GREEN"
             v["onstar.tirestatusrr"]=o.get_diagnostics().results[0].reportData.metrics.tireStatusRr=="GREEN"
+            v["onstar.tiresetting"]=o.get_diagnostics().results[0].reportData.metrics.placardSetting
+            v["onstar.ftirepressure"]=o.get_diagnostics().results[0].reportData.metrics.placardFront
+            v["onstar.rtirepressure"]=o.get_diagnostics().results[0].reportData.metrics.placardRear
             v["onstar.nextmaindate"]=o.get_diagnostics().results[0].reportData.maintenance.nextMaintDate
-            v["onstar.nextmainodo"]=o.get_diagnostics().results[0].reportData.maintenance.nextMaintOdometer
+            v["onstar.nextmainodo"]=int(round(o.get_diagnostics().results[0].reportData.maintenance.nextMaintOdometer))
             v["onstar.airbagok"]=o.get_diagnostics().results[0].reportData.sections.airbag.status=="GREEN"
-            v["onstar.localisation"]=self._get_location(o.get_location().results)
-            
+            v["onstar.localization"]=self._get_location(o.get_location().results)
+
             return v
         except (ConnectionResetError) as err:
             _LOGGER.debug(
