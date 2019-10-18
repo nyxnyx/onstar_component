@@ -8,6 +8,7 @@ from . import (DOMAIN)
 from homeassistant.const import ATTR_STATE
 from homeassistant.exceptions import PlatformNotReady
 from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.event import track_utc_time_change
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         sensor_type = resource.lower()
 
         if sensor_type in data.status:
-            entities.append(OnStarSensor(data, sensor_type))
+            entities.append(OnStarSensor(data, sensor_type, hass))
         else:
             _LOGGER.warning(
                 "Sensor type: %s does not appear in OnStar status "
@@ -41,7 +42,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 class OnStarSensor(Entity):
     """Representation of a sensor entity for OnStar status values."""
 
-    def __init__(self, data, sensor_type):
+    def __init__(self, data, sensor_type, hass):
         """Initialize the sensor."""
         self._data = data
         self.type = sensor_type
@@ -49,6 +50,9 @@ class OnStarSensor(Entity):
         self.entity_id= "sensor.{}".format(sensor_type.replace('.','_'))
         self._unit = self._data.SENSOR_TYPES[sensor_type][1]
         self._state = None
+        self._hass = hass
+
+        self.setup()
 
     @property
     def name(self):
@@ -94,6 +98,7 @@ class OnStarSensor(Entity):
 
     def update(self):
         """Get the latest status and use it to update our sensor state."""
+        _LOGGER.info("Update state")
         if self._data.status is None:
             self._state = None
             return
@@ -102,3 +107,12 @@ class OnStarSensor(Entity):
             self._state = None
         else:
             self._state = self._data.status[self.type]
+
+    def force_update(self):
+        return True
+
+    def setup(self):
+        """Schedule update of state by HA"""
+        track_utc_time_change(
+            self._hass, lambda now: self.schedule_update_ha_state(True), second=range(0, 60, 45)
+        )

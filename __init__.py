@@ -15,7 +15,6 @@ from homeassistant.const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-REQUIREMENTS = ['onstar==0.1.2']
 DOMAIN="onstar_component"
 
 CONFIG_SCHEMA = vol.Schema(

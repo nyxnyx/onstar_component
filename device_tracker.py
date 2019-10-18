@@ -6,6 +6,7 @@ from homeassistant.helpers.event import track_utc_time_change
 
 from . import DOMAIN
 
+
 def setup_scanner(hass, config, see, discovery_info=None):
 
     data = hass.data[DOMAIN]
@@ -26,7 +27,7 @@ class OnstarDeviceTracker:
         """Set up a timer and start gathering devices."""
         self.update()
         track_utc_time_change(
-            hass, lambda now: self.update(), second=range(0, 60, 60)
+            hass, lambda now: self.update(), second=range(0, 60, 30)
         )
 
 
