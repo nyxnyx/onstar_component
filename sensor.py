@@ -109,7 +109,7 @@ class OnStarSensor(Entity):
             self._state = self._data.status[self.type]
 
     def force_update(self):
-        return True
+        return False
 
     def setup(self):
         """Schedule update of state by HA"""
