@@ -1,6 +1,6 @@
 # onstar_component
-This is an onstar component for Home-Assistant and Opel cars. I'm not related to Onstar.com company. 
-If you are from Onstar.com company and reading this and want to access code - you have to pay me 1 000 000 EUR. So stop right now or pay to proceed. For further actions - please contanct me over github.
+This is an onstar component for Home-Assistant and Opel cars. I'm not related to any of Onstar.com companies. 
+If you are from Onstar.com company or represening it or other entities related to Onstar.com and reading this and want to access code - you have to pay me 1 000 000 EUR. So stop right now or pay to proceed. For further actions - please contanct me over github.
 
 This code is designed to help people with Onstar emabled cars to track, managed, monitor their cars with Home Assistant.
 
