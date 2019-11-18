@@ -4,6 +4,11 @@ If you are from Onstar.com company or represening it or other entities related t
 
 This code is designed to help people with Onstar emabled cars to track, managed, monitor their cars with Home Assistant.
 
+# Maintainer needed
+Due to real usage of OnStar service for my car - OnStar has closed my account. Since I'm unable to further develop this component - an maintarner is needed. Please contact me for further questions.
+
+# Configuration
+
 There was change from initial version. Now it has sensor and device_tracker.
 
 CHANGE your config if you were using it without device_tracker!!!!
