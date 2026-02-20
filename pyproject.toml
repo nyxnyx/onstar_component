@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "onstar_component"
+version = "0.1.0"
+description = "Opel OnStar component for Home Assistant"
+readme = "README.md"
+authors = [{ name = "nyxnyx" }]
+dependencies = [
+    "onstar==0.1.2",
+    "voluptuous",
+]
+requires-python = ">=3.12"

@@ -1,21 +1,24 @@
-import logging
-import voluptuous as vol
-import homeassistant.helpers.config_validation as cv
 import asyncio
-from datetime import datetime
-from datetime import timedelta
-from homeassistant.helpers import discovery
-from onstar import onstar
-from homeassistant.util import Throttle
+import logging
+from datetime import datetime, timedelta
+from typing import Any
 
-
+import homeassistant.helpers.config_validation as cv
+import voluptuous as vol
 from homeassistant.const import (
-    CONF_NAME, CONF_USERNAME, CONF_PASSWORD, CONF_PIN,
-    CONF_SCAN_INTERVAL, CONF_RESOURCES, CONF_ALIAS, ATTR_STATE, STATE_UNKNOWN)
+    CONF_PASSWORD,
+    CONF_PIN,
+    CONF_USERNAME,
+)
+from homeassistant.helpers import discovery
+from homeassistant.util import Throttle
+from onstar.onstar import OnStar
+
+from .const import DOMAIN, MIN_TIME_BETWEEN_UPDATES, ONSTAR_COMPONENTS
 
 _LOGGER = logging.getLogger(__name__)
 
-DOMAIN="onstar_component"
+# DOMAIN moved to const.py
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -32,14 +35,17 @@ CONFIG_SCHEMA = vol.Schema(
 
 SERVICE_UPDATE_STATE = "update_state"
 
-# Those components will be dicovered automatically based on ocnfiguration
-ONSTAR_COMPONENTS = ["sensor", "device_tracker"]
-
-MIN_TIME_BETWEEN_UPDATES = timedelta(seconds=300)
+# MIN_TIME_BETWEEN_UPDATES and ONSTAR_COMPONENTS moved to const.py
 
 def setup(hass, base_config: dict):
+    if base_config is None:
+        _LOGGER.error("Base configuration is missing")
+        return False
     
     config = base_config.get(DOMAIN)
+    if config is None:
+        _LOGGER.error("Configuration for %s is missing", DOMAIN)
+        return False
     
     username = config.get(CONF_USERNAME)
     password = config.get(CONF_PASSWORD)
@@ -72,7 +78,7 @@ class OnStarData(object):
         self._pin = pin
 
         self.gps_position = None
-        self._status = None
+        self._status: dict[str, Any] | None = None
 
         self.SENSOR_TYPES = {
             'onstar.plate': ['Plate', '', 'mdi:account-card-details'],
@@ -108,10 +114,10 @@ class OnStarData(object):
         try:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
-            o = onstar.OnStar(self._username, self._password, self._pin, loop)
+            o = OnStar(self._username, self._password, self._pin, loop)
             loop.run_until_complete(o.refresh())
 
-            v={}
+            v: dict[str, Any] = {}
             v["onstar.plate"]=o.get_diagnostics().results[0].vehicle.licensePlate
             v["onstar.vin"]=o.get_diagnostics().results[0].vehicle.vehicleVIN
             v["onstar.laststatus"]=self._get_date(o.get_diagnostics().results[0].updatedOn)
@@ -146,8 +152,7 @@ class OnStarData(object):
 
     @property
     def status(self):
-        """Get latest update if throttle allows. Return status."""
-        self.update()
+        """Return the current status."""
         return self._status
 
     # Formats date from 2019-10-16T10:54:52.535+02:00 to human readable

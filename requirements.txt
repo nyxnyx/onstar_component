@@ -1,0 +1,3 @@
+onstar==0.1.2
+voluptuous
+homeassistant

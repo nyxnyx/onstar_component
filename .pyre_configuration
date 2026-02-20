@@ -1,0 +1,12 @@
+{
+  "site_package_search_strategy": "all",
+  "source_directories": [
+    "."
+  ],
+  "search_path": [
+    ".venv/lib/python3.12/site-packages"
+  ],
+  "exclude": [
+    "**/__pycache__/*"
+  ]
+}

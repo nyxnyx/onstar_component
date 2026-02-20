@@ -1,10 +1,11 @@
 import logging
 
-_LOGGER = logging.getLogger(__name__)
-from homeassistant.util import slugify
 from homeassistant.helpers.event import track_utc_time_change
+from homeassistant.util import slugify
 
-from . import DOMAIN
+from .const import DOMAIN
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def setup_scanner(hass, config, see, discovery_info=None):
